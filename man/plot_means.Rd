@@ -92,6 +92,11 @@ example_df <- data.frame(
   Depth_revised = example_group2,
   EC_uS_cm = example_data
 )
+#Load library devtools
+library("devtools")
+
+#Install library Kifidi
+install_github("OswaldOmuron/Kifidi")
 
 # Load your package (if not already loaded)
 library("Kifidi")
