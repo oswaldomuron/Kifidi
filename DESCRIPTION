@@ -1,4 +1,4 @@
-Package: "Kifidi"
+Package: Kifidi
 Type: Package
 Title: THIS PACKAGE CREATES A SUMMARY TABLE AND MEANS PLOTS OF A DATASET BASED ON A SELECTED VARIABLE(S)
 Version: 0.1.0
