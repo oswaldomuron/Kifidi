@@ -1,11 +1,12 @@
-Package: Kifidi
+Package: "Kifidi"
 Type: Package
-Title: What the Package Does (Title Case)
+Title: THIS PACKAGE CREATES A SUMMARY TABLE AND MEANS PLOTS OF A DATASET BASED ON A SELECTED VARIABLE(S)
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Author: Oswald Omuron
+Maintainer: The package maintainer can be reached at <oswaldomuron@gmail.com>
+Description: Package Kifidi has two functions:
+    Summarise datasets into an object in the global environment based on selected variable(s) using the summarize_data() function and,
+    plot the summarised data using the plot_means() function
+License: GPL-3
 Encoding: UTF-8
 LazyData: true
