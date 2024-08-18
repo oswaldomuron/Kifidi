@@ -1,5 +1,5 @@
 #getwd()
-#rm(list = ls())
+rm(list = ls())
 library("devtools")
 use_git()
 summarize_data <- function(column_data, group_var1, group_var2 = NULL) {
