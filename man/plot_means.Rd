@@ -65,11 +65,9 @@ Oswald Omuron
 \note{
 Additional notes can be added here.
 }
-
 \seealso{
 The \code{\link{summary}} function for creating summary data frames.
 }
-
 \examples{
 # Example data
 example_data <- c(
@@ -101,11 +99,11 @@ print(summary_one_group)
 summary_two_groups <- summarize_data(example_df$EC_uS_cm, example_df$Vegetation_types, example_df$Depth_revised)
 print(summary_two_groups)
 
-#Plot the outcomes
-#Plot the outcomes
-par(mar=c(10,5,2,5)) #This sets the margins for better view of the plot area
-plot_means(summary_one_group,ylim=c(0,250),las=2)
-par(mar=c(10,5,2,5)) #This sets the margins for better view of the plot area
-plot_means(summary_two_groups,ylim=c(0,350),las=2,space = c(0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0))
+# Plot the outcomes
+par(mar=c(10,5,2,5)) # This sets the margins for better view of the plot area
+plot_means(summary_one_group, ylim=c(0,250), las=2)
+
+par(mar=c(10,5,2,5)) # This sets the margins for better view of the plot area
+plot_means(summary_two_groups, ylim=c(0,350), las=2, space = c(0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0))
 }
-}
+
