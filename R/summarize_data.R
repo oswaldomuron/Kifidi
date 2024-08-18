@@ -1,7 +1,7 @@
 #getwd()
-rm(list = ls())
-library("devtools")
-use_git()
+#rm(list = ls())
+#library("devtools")
+#use_git()
 summarize_data <- function(column_data, group_var1, group_var2 = NULL) {
   if (is.null(group_var2)) {
     # Aggregate the data with one grouping variable

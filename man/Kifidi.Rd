@@ -22,13 +22,13 @@
   Maintainer: Oswald Omuron <oswaldomuron@gmail.com>
 }
 \references{
-  Literature or other references for background information.
+  I will be updating this soon with a link
 }
 \seealso{
   Optional links to other man pages, e.g. \code{\link{summarize_data}},
   \code{\link{plot_means}}
 }
 
-}
+
 \keyword{package}
 

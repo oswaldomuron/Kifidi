@@ -1,1 +1,3 @@
+importFrom(stats, aggregate, median, sd)
+importFrom(graphics, arrows, barplot)
 exportPattern("^[[:alpha:]]+")
