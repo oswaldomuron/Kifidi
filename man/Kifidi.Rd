@@ -22,7 +22,7 @@
   Maintainer: Oswald Omuron <oswaldomuron@gmail.com>
 }
 \references{
-  I will be updating this soon with a link
+  <https://github.com/OswaldOmuron/Kifidi>
 }
 \seealso{
   Optional links to other man pages, e.g. \code{\link{summarize_data}},
