@@ -1,3 +1,10 @@
+**Kifidi**
+
+**Note**: Don’t forget to activate the Kifidi library before using any functions from this package:
+
+```R
+library(Kifidi)
+```
 **1. Overview**
 
 The Kifidi package provides tools for summarizing and analyzing environmental data based on grouping variables. It is designed to facilitate statistical summaries of data sets containing numeric measurements and associated categorical grouping factors. The package is particularly useful for environmental and ecological studies where data is often collected across different categories, such as vegetation types, depth, or sampling locations.
