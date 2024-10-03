@@ -23,21 +23,23 @@ summarize_data(column_data, group_var1, group_var2 = NULL)
 \details{
 If only one grouping variable is provided, the function will summarize the data by that variable. If two grouping variables are provided, it will summarize the data by both variables.
 }
-\section{Output}{
+\value{
   A data frame with the following columns:
   \describe{
-    \item{Group1, Group2}{The grouping variables.}
-    \item{Mean}{The mean of the data for each group.}
-    \item{SD}{The standard deviation of the data for each group.}
+    \item{Group1}{The first grouping variable (from \code{group_var1}).}
+    \item{Group2}{The second grouping variable (from \code{group_var2}), if provided.}
+    \item{Mean}{The mean of the \code{column_data} for each group.}
+    \item{SD}{The standard deviation of the \code{column_data} for each group.}
     \item{N}{The sample size for each group.}
-    \item{Min}{The minimum value of the data for each group.}
-    \item{Max}{The maximum value of the data for each group.}
-    \item{Median}{The median value of the data for each group.}
+    \item{Min}{The minimum value of the \code{column_data} for each group.}
+    \item{Max}{The maximum value of the \code{column_data} for each group.}
+    \item{Median}{The median value of the \code{column_data} for each group.}
     \item{SE}{The standard error of the mean for each group.}
   }
 }
-
-
+\section{Output}{
+  A data frame with the above columns.
+}
 \references{
 No references available.
 }
@@ -92,8 +94,6 @@ Ensure that the grouping variables and the data column are of the same length.
   )
   print(summary_two_groups)
 }
-
-
 
 \keyword{data}
 \keyword{summary}

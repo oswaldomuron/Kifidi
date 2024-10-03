@@ -1,6 +1,6 @@
 Package: Kifidi
 Type: Package
-Title: This Package Creates a Summary Table and Means Plots of a Dataset Based on a Selected Variable(s)
+Title: 'Kifidi' Creates a Summary Table and Means Plots 
 Version: 0.1.0
 Authors@R: person(given = "Oswald",
                   family = "Omuron",
@@ -9,8 +9,9 @@ Authors@R: person(given = "Oswald",
 Maintainer: Oswald Omuron <oswaldomuron@gmail.com>
 Description: 
     Package Kifidi has two functions:
-    - `summarize_data()`: Summarizes datasets into an object in the global environment based on selected variable(s).
-    - `plot_means()`: Plots the summarized data.
+    - summarize_data(): Summarizes datasets into an object in the global environment based on selected variable(s).
+    - plot_means(): Plots the summarized data.
+References: For more information, see 'Kifidi' on GitHub: <https://github.com/OswaldOmuron/Kifidi>
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
