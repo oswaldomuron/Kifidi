@@ -1,6 +1,6 @@
 Package: Kifidi
 Type: Package
-Title: 'Kifidi' Creates a Summary Table and Means Plots 
+Title: Summary Table and Means Plots
 Version: 0.1.0
 Authors@R: person(given = "Oswald",
                   family = "Omuron",
@@ -8,12 +8,9 @@ Authors@R: person(given = "Oswald",
                   email = "oswaldomuron@gmail.com")
 Maintainer: Oswald Omuron <oswaldomuron@gmail.com>
 Description: 
-    Package Kifidi has two functions:
-    - summarize_data(): Summarizes datasets into an object in the global environment based on selected variable(s).
-    - plot_means(): Plots the summarized data.
-References: For more information, see 'Kifidi' on GitHub: <https://github.com/OswaldOmuron/Kifidi>
+    Provides two key functions to work with environmental and ecological data:
+    - 'summarize_data()' allows users to summarize datasets based on selected grouping variables, returning a summary object.
+    - 'plot_means()' creates bar plots with optional error bars from the summarized data.
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
-
-
