@@ -47,7 +47,7 @@ No references available.
 Oswald Omuron
 }
 \note{
-Ensure that the grouping variables and the data column are of the same length.
+The grouping variables and the data column can be of different lengths.
 }
 \seealso{
 \code{\link{aggregate}},
