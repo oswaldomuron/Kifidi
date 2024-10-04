@@ -1,5 +1,4 @@
 \name{Kifidi-package}
-\alias{Kifidi-package}
 \alias{Kifidi}
 \docType{package}
 \title{Kifidi package by Oswald Omuron}
