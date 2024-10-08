@@ -8,9 +8,16 @@ Authors@R: person(given = "Oswald",
                   email = "oswaldomuron@gmail.com")
 Maintainer: Oswald Omuron <oswaldomuron@gmail.com>
 Description: 
-    Provides two key functions to work with environmental and ecological data:
-    - 'summarize_data()' allows users to summarize datasets based on selected grouping variables, returning a summary object.
-    - 'plot_means()' creates bar plots with optional error bars from the summarized data.
+    Kifidi is optimized for handling complex datasets commonly used in 
+    environmental and ecological research, offering functionality that 
+    isn't fully met by general-purpose packages. It provides only two key 
+    functions, 'summarize_data()' for summarizing datasets and 'plot_means()' 
+    for plotting with error bars, ensuring ease of use for researchers. 
+    The 'plot_means()' function incorporates error bars by default, 
+    allowing for quick visualization of uncertainties crucial in ecological 
+    studies. Kifidi streamlines the workflow for grouped datasets (e.g., by 
+    species or treatment), making it particularly user-friendly and reducing 
+    the complexity and time required for summarizing and visualizing data. 
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
