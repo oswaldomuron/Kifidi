@@ -1,5 +1,15 @@
 **Kifidi**
 
+**1.** You can install the Kifidi package from CRAN using:  
+```R
+install.packages("Kifidi")
+```
+**2.** Or using installation from github.  
+*This github installation may have updates that are not yet avaialable on the CRAN version*
+```R
+library(devtools)
+install_github("OswaldOmuron/Kifidi")
+```
 **Note**: Don’t forget to activate the Kifidi library before using any functions from this package:
 
 ```R
