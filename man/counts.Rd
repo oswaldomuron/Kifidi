@@ -27,7 +27,7 @@ A data frame with the following components:
 For additional information on related functions, see \code{\link{unique}} and \code{\link{table}} in base R.
 }
 \author{
-Your Name Here
+Oswald Omuron
 }
 \note{
 This function is intended for small to medium-sized datasets. For larger datasets, consider using \code{table} for better performance.
