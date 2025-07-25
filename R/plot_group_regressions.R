@@ -15,6 +15,10 @@
 #' @param conf.int Logical; whether to draw confidence intervals.
 #' @param label_equations Logical; whether to label each group with its regression equation.
 #' @param add Logical; whether to add to an existing plot.
+#' @param draw_lm Logical; whether to draw the regression line(s).
+#' @param lty Line type(s); either scalar, vector, or named by group.
+#' @param lwd Line width(s); either scalar, vector, or named by group.
+#' @param pch Point character(s); either scalar, vector, or named by group.
 #' @param theme Plot theme (currently unused).
 #' @param ... Additional plotting parameters passed to \code{points()}.
 #'
@@ -31,13 +35,15 @@ plot_group_regressions <- function(x, y, group = NULL,
                                    conf.int = FALSE,
                                    label_equations = FALSE,
                                    add = FALSE,
-                                   theme = "default",
+                                   draw_lm = TRUE,
                                    lty = 1,
+                                   lwd = 2,
                                    pch = 16,
+                                   theme = "default",
                                    ...) {
   dot_args <- list(...)
 
-  # Check if user passed 'col' explicitly in '...'
+  # Extract 'col' from dot_args, if present
   user_col <- NULL
   if ("col" %in% names(dot_args)) {
     user_col <- dot_args$col
@@ -53,50 +59,66 @@ plot_group_regressions <- function(x, y, group = NULL,
     y <- y[valid]
 
     if (!add) {
-      plot(x, y, main = main, xlab = xlab, ylab = ylab, ...)
+      plot(x, y, main = main, xlab = xlab, ylab = ylab, type = "n", ...)
     }
 
     point_col <- if (!is.null(user_col)) user_col else "black"
-    points(x, y, col = point_col, pch = ifelse(length(pch) == 1, pch, pch[1]))
+    pch_val <- if (length(pch) == 1) pch else pch[1]
+    lty_val <- if (length(lty) == 1) lty else lty[1]
+    lwd_val <- if (length(lwd) == 1) lwd else lwd[1]
 
-    model <- lm(y ~ x)
-    line_col <- if (!is.null(user_col)) user_col else "red"
-    abline(model, col = line_col, lwd = 2, lty = ifelse(length(lty) == 1, lty, lty[1]))
+    points(x, y, col = point_col, pch = pch_val, ...)
 
-    if (conf.int) {
-      x_seq <- seq(min(x), max(x), length.out = 200)
-      pred <- predict(model, newdata = data.frame(x = x_seq), interval = "confidence")
-      polygon(c(x_seq, rev(x_seq)),
-              c(pred[, "lwr"], rev(pred[, "upr"])),
-              col = adjustcolor(line_col, alpha.f = 0.2),
-              border = NA)
+    if (draw_lm) {
+      model <- lm(y ~ x)
+      line_col <- if (!is.null(user_col)) user_col else "red"
+      abline(model, col = line_col, lwd = lwd_val, lty = lty_val)
+
+      if (conf.int) {
+        x_seq <- seq(min(x), max(x), length.out = 200)
+        pred <- predict(model, newdata = data.frame(x = x_seq), interval = "confidence")
+        polygon(c(x_seq, rev(x_seq)),
+                c(pred[, "lwr"], rev(pred[, "upr"])),
+                col = adjustcolor(line_col, alpha.f = 0.2),
+                border = NA)
+      }
+
+      coef <- coef(model)
+      slope <- round(coef[2], 3)
+      intercept <- round(coef[1], 3)
+      r2 <- round(summary(model)$r.squared, 3)
+      eq_label <- paste0("y = ", slope, "x + ", intercept, ", R² = ", r2)
+
+      if (label_equations) {
+        usr <- par("usr")
+        x_pos <- usr[1] + 0.05 * (usr[2] - usr[1])
+        y_pos <- usr[4] - 0.05 * (usr[4] - usr[3])
+        text(x_pos, y_pos, eq_label, adj = c(0, 1), col = line_col, cex = 0.9)
+      }
+
+      if (legend) {
+        legend(legend_position,
+               legend = eq_label,
+               col = line_col,
+               lwd = lwd_val,
+               pch = pch_val,
+               lty = lty_val,
+               bg = "white",
+               cex = 0.8)
+      }
+
+      if (return_models) return(list(overall = model))
+    } else {
+      if (legend) {
+        legend(legend_position,
+               legend = "Data",
+               col = point_col,
+               pch = pch_val,
+               bg = "white",
+               cex = 0.8)
+      }
     }
 
-    coef <- coef(model)
-    slope <- round(coef[2], 3)
-    intercept <- round(coef[1], 3)
-    r2 <- round(summary(model)$r.squared, 3)
-    eq_label <- paste0("y = ", slope, "x + ", intercept, ", R² = ", r2)
-
-    if (label_equations) {
-      usr <- par("usr")
-      x_pos <- usr[1] + 0.05 * (usr[2] - usr[1])
-      y_pos <- usr[4] - 0.05 * (usr[4] - usr[3])
-      text(x_pos, y_pos, eq_label, adj = c(0, 1), col = line_col, cex = 0.9)
-    }
-
-    if (legend) {
-      legend(legend_position,
-             legend = eq_label,
-             col = line_col,
-             lwd = 2,
-             pch = ifelse(length(pch) == 1, pch, pch[1]),
-             lty = ifelse(length(lty) == 1, lty, lty[1]),
-             bg = "white",
-             cex = 0.8)
-    }
-
-    if (return_models) return(list(overall = model))
     return(invisible(NULL))
   }
 
@@ -108,6 +130,7 @@ plot_group_regressions <- function(x, y, group = NULL,
   levels_group <- levels(group)
   n_groups <- length(levels_group)
 
+  # Color handling
   if (is.null(colors)) {
     colors <- setNames(rainbow(n_groups), levels_group)
   } else {
@@ -121,7 +144,7 @@ plot_group_regressions <- function(x, y, group = NULL,
     }
   }
 
-  # Handle group-wise pch
+  # pch handling
   if (length(pch) == 1) {
     pch_vec <- setNames(rep(pch, n_groups), levels_group)
   } else if (is.null(names(pch))) {
@@ -132,7 +155,7 @@ plot_group_regressions <- function(x, y, group = NULL,
     pch_vec <- pch[levels_group]
   }
 
-  # Handle group-wise lty
+  # lty handling
   if (length(lty) == 1) {
     lty_vec <- setNames(rep(lty, n_groups), levels_group)
   } else if (is.null(names(lty))) {
@@ -141,6 +164,17 @@ plot_group_regressions <- function(x, y, group = NULL,
   } else {
     if (!all(levels_group %in% names(lty))) stop("lty names don't match all groups")
     lty_vec <- lty[levels_group]
+  }
+
+  # lwd handling
+  if (length(lwd) == 1) {
+    lwd_vec <- setNames(rep(lwd, n_groups), levels_group)
+  } else if (is.null(names(lwd))) {
+    if (length(lwd) < n_groups) stop("lwd vector too short")
+    lwd_vec <- setNames(lwd[1:n_groups], levels_group)
+  } else {
+    if (!all(levels_group %in% names(lwd))) stop("lwd names don't match all groups")
+    lwd_vec <- lwd[levels_group]
   }
 
   if (!add) {
@@ -167,37 +201,44 @@ plot_group_regressions <- function(x, y, group = NULL,
 
     do.call(points, c(list(x = xi, y = yi, col = point_col, pch = pch_vec[g]), dot_args))
 
-    model <- lm(yi ~ xi)
-    abline(model, col = colors[[g]], lwd = 2, lty = lty_vec[g])
+    if (draw_lm) {
+      model <- lm(yi ~ xi)
+      names(model$model) <- c("y", "x")  # for consistency
+      model <- lm(y ~ x, data = data.frame(x = xi, y = yi))
+      abline(model, col = colors[[g]], lwd = lwd_vec[g], lty = lty_vec[g])
 
-    if (conf.int) {
-      x_seq <- seq(min(xi), max(xi), length.out = 200)
-      pred <- predict(model, newdata = data.frame(xi = x_seq), interval = "confidence")
-      polygon(c(x_seq, rev(x_seq)),
-              c(pred[, "lwr"], rev(pred[, "upr"])),
-              col = adjustcolor(colors[[g]], alpha.f = 0.2),
-              border = NA)
+      if (conf.int) {
+        x_seq <- seq(min(xi), max(xi), length.out = 200)
+        pred <- predict(model, newdata = data.frame(x = x_seq), interval = "confidence")
+        polygon(c(x_seq, rev(x_seq)),
+                c(pred[, "lwr"], rev(pred[, "upr"])),
+                col = adjustcolor(colors[[g]], alpha.f = 0.2),
+                border = NA)
+      }
+
+      coef <- coef(model)
+      slope <- round(coef[2], 3)
+      intercept <- round(coef[1], 3)
+      r2 <- round(summary(model)$r.squared, 3)
+      eq_label <- paste0(g, ": y = ", slope, "x + ", intercept, ", R² = ", r2)
+
+      if (label_equations) {
+        usr <- par("usr")
+        x_pos <- usr[1] + 0.05 * (usr[2] - usr[1])
+        y_pos <- usr[4] - (0.05 + 0.05 * which(levels_group == g)) * (usr[4] - usr[3])
+        text(x_pos, y_pos, eq_label, adj = c(0, 1), col = colors[[g]], cex = 0.9)
+      }
+
+      legend_labels <- c(legend_labels, eq_label)
+      model_list[[g]] <- model
+    } else {
+      legend_labels <- c(legend_labels, g)
+      model_list[[g]] <- NULL
     }
 
-    coef <- coef(model)
-    slope <- round(coef[2], 3)
-    intercept <- round(coef[1], 3)
-    r2 <- round(summary(model)$r.squared, 3)
-
-    eq_label <- paste0(g, ": y = ", slope, "x + ", intercept, ", R² = ", r2)
-    legend_labels <- c(legend_labels, eq_label)
     legend_colors <- c(legend_colors, colors[[g]])
     legend_pch <- c(legend_pch, pch_vec[g])
     legend_lty <- c(legend_lty, lty_vec[g])
-
-    if (label_equations) {
-      usr <- par("usr")
-      x_pos <- usr[1] + 0.05 * (usr[2] - usr[1])
-      y_pos <- usr[4] - (0.05 + 0.05 * which(levels_group == g)) * (usr[4] - usr[3])
-      text(x_pos, y_pos, eq_label, adj = c(0, 1), col = colors[[g]], cex = 0.9)
-    }
-
-    model_list[[g]] <- model
   }
 
   if (legend) {
@@ -206,13 +247,10 @@ plot_group_regressions <- function(x, y, group = NULL,
            col = legend_colors,
            pch = legend_pch,
            lty = legend_lty,
-           lwd = 2,
+           lwd = lwd_vec,
            bg = "white",
            cex = 0.8)
   }
 
   if (return_models) return(model_list)
 }
-
-
-
