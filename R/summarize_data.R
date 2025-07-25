@@ -1,7 +1,35 @@
-#getwd()
-#rm(list = ls())
-#library("devtools")
-#use_git()
+#' Summarize Data by Groups
+#'
+#' This function summarizes a numeric vector by one or two grouping variables.
+#' It calculates mean, standard deviation, sample size, min, max, median, and standard error.
+#'
+#' @param column_data A numeric vector containing the values to summarize.
+#' @param group_var1 A factor or vector to group by (required).
+#' @param group_var2 An optional second grouping factor or vector.
+#'
+#' @return A data frame containing summary statistics by group(s):
+#' \describe{
+#'   \item{Group1}{The first grouping variable.}
+#'   \item{Group2}{The second grouping variable (if provided).}
+#'   \item{Mean}{Group mean.}
+#'   \item{SD}{Standard deviation.}
+#'   \item{N}{Sample size.}
+#'   \item{Min}{Minimum value.}
+#'   \item{Max}{Maximum value.}
+#'   \item{Median}{Median value.}
+#'   \item{SE}{Standard error of the mean.}
+#' }
+#'
+#' @examples
+#' data <- c(10, 20, 30, 40, 50, 60)
+#' group1 <- c("A", "A", "B", "B", "C", "C")
+#' group2 <- c(1, 1, 2, 2, 3, 3)
+#' summarize_data(data, group1)
+#' summarize_data(data, group1, group2)
+#'
+#' @author Oswald Omuron
+#' @export
+
 summarize_data <- function(column_data, group_var1, group_var2 = NULL) {
   if (is.null(group_var2)) {
     # Aggregate the data with one grouping variable
