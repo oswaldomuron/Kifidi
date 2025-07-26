@@ -1,0 +1,18 @@
+#' Kifidi: Tools for summarizing and analyzing grouped environmental data
+#'
+#' The Kifidi package provides tools for summarizing and visualizing grouped numerical data,
+#' especially for environmental and ecological datasets. It includes functions for generating
+#' statistical summaries, plotting means with error bars, performing grouped regression analysis,
+#' and generating frequency counts by group.
+#'
+#' @section Main Functions:
+#' \describe{
+#'   \item{\code{\link{summarize_data}}}{Provides statistical summaries (mean, SD, N, etc.) of numeric data grouped by one or two categorical variables.}
+#'   \item{\code{\link{plot_means}}}{Creates bar plots of means with optional error bars.}
+#'   \item{\code{\link{plot_group_regressions}}}{Performs and plots linear regressions grouped by a factor variable.}
+#'   \item{\code{\link{counts}}}{Generates frequency tables or counts of observations by grouping variables.}
+#' }
+#'
+#' @author Oswald Omuron
+#' @keywords package
+"_PACKAGE"

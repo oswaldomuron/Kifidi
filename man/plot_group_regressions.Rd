@@ -17,8 +17,12 @@ plot_group_regressions(
   return_models = FALSE,
   conf.int = FALSE,
   label_equations = FALSE,
+  draw_lm = TRUE,
   add = FALSE,
   theme = "default",
+  lty = 1,
+  lwd = 2,
+  pch = 16,
   ...
 )
 }
@@ -47,9 +51,17 @@ plot_group_regressions(
 
 \item{label_equations}{Logical; whether to label each group with its regression equation.}
 
+\item{draw_lm}{Logical; whether to draw the regression line(s).}
+
 \item{add}{Logical; whether to add to an existing plot.}
 
 \item{theme}{Plot theme (currently unused).}
+
+\item{lty}{Line type(s) for regression line.}
+
+\item{lwd}{Line width(s) for regression line.}
+
+\item{pch}{Plotting character(s) for points.}
 
 \item{...}{Additional plotting parameters passed to \code{points()}.}
 }
