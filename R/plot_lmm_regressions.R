@@ -92,12 +92,18 @@ plot_lmm_regressions <- function(formula, data,
                                  xlab = NULL, ylab = NULL, main = NULL,
                                  draw_fixed_line = TRUE, draw_group_lines = TRUE,
                                  label_equations = TRUE, legend_position = "topright",
-                                 ann = T, axes = T,
+                                 inset = 0,      # added
+                                 xpd = TRUE,     # added
+                                 ann = TRUE, axes = TRUE,
                                  legend = TRUE, return_model = FALSE, ...) {
   if (!requireNamespace("lme4", quietly = TRUE)) {
     stop("Please install the 'lme4' package.")
   }
   library(lme4)
+
+  op <- par(no.readonly = TRUE)
+  on.exit(par(op))
+  par(xpd = xpd)
 
   model <- lmer(formula, data = data)
   mf <- model.frame(model)
@@ -119,7 +125,7 @@ plot_lmm_regressions <- function(formula, data,
   plot(x, y, type = "n",
        xlab = ifelse(is.null(xlab), x_var, xlab),
        ylab = ifelse(is.null(ylab), all.vars(formula)[1], ylab),
-       main = main,ann = ann,axes = axes, ...)
+       main = main, ann = ann, axes = axes, ...)
 
   fe <- fixef(model)
   coef_df <- coef(model)[[group_var]]
@@ -168,7 +174,7 @@ plot_lmm_regressions <- function(formula, data,
   if (legend) {
     legend(legend_position, legend = legend_labels,
            col = colors, lty = lty_vec, lwd = lwd_vec,
-           pch = pch_vec, bty = "n")
+           pch = pch_vec, bty = "o", inset = inset)
   }
 
   if (return_model) return(model) else invisible(NULL)
