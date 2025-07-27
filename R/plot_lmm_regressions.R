@@ -1,3 +1,77 @@
+#' Plot Linear Mixed Model (LMM) Regressions by Group
+#'
+#' This function fits a linear mixed-effects model using `lme4::lmer()` and plots
+#' the data with regression lines and equations for each group.
+#' It supports random intercept, random slope, or both, and can label equations
+#' using per-group estimates of slope and intercept.
+#'
+#' @param formula A mixed-effects model formula (e.g., `y ~ x + (1 | group)`).
+#' @param data A data frame containing the variables in the formula.
+#' @param colors Optional vector of colors to use for each group. Defaults to rainbow.
+#' @param lty Line type(s) for regression lines.
+#' @param lwd Line width(s) for regression lines.
+#' @param pch Plotting symbol(s) for points.
+#' @param xlab Label for the x-axis. Defaults to variable name.
+#' @param ylab Label for the y-axis. Defaults to variable name.
+#' @param main Title for the plot.
+#' @param draw_fixed_line Logical. Should the fixed effects regression line be drawn? Default is TRUE.
+#' @param draw_group_lines Logical. Should regression lines be drawn for each group using conditional coefficients? Default is TRUE.
+#' @param label_equations Logical. Should each group’s equation and R² be labeled in the legend? Default is TRUE.
+#' @param legend_position Position of the legend (e.g., `"topright"`).
+#' @param legend Logical. Should a legend be displayed? Default is TRUE.
+#' @param return_model Logical. If TRUE, returns the fitted `lmer` model object.
+#' @param ... Additional graphical parameters passed to `plot()` or `points()`.
+#'
+#' @details
+#' The function fits a linear mixed-effects model using `lme4::lmer()` and
+#' extracts per-group slopes and intercepts using `coef(model)[[group_var]]`,
+#' which provides default group-specific estimates as reported by `lme4`.
+#'
+#' When `label_equations = TRUE`, each group line is labeled in the legend
+#' with its regression equation and R² from an ordinary least squares fit to that group.
+#' The fixed-effect line is plotted with a dashed black line if `draw_fixed_line = TRUE`.
+#'
+#' This function is useful for visualizing differences between groups in mixed-effects models.
+#'
+#' @return Invisibly returns the model object if `return_model = TRUE`, otherwise NULL.
+#'
+#' @examples
+#' \dontrun{
+#' library(lme4)
+#' data <- your_dataframe
+#'
+#' # Random intercepts only: groups have their own intercepts but share a slope
+#' plot_lmm_regressions(
+#'   OM ~ pH + (1 | Vegetation_types),
+#'   data,
+#'   main = "Random Intercepts Only: Group-specific intercepts, common slope",
+#'   draw_group_lines = TRUE,
+#'   label_equations = TRUE
+#' )
+#'
+#' # Random slopes only: groups have their own slopes but share an intercept
+#' plot_lmm_regressions(
+#'   OM ~ pH + (pH - 1 | Vegetation_types),
+#'   data,
+#'   main = "Random Slopes Only: Group-specific slopes, common intercept",
+#'   draw_group_lines = TRUE,
+#'   label_equations = TRUE
+#' )
+#'
+#' # Random intercepts and slopes: groups have their own slopes and intercepts
+#' plot_lmm_regressions(
+#'   OM ~ pH + (pH | Vegetation_types),
+#'   data,
+#'   main = "Random Slopes and Intercepts: Group-specific slopes and intercepts",
+#'   draw_group_lines = TRUE,
+#'   label_equations = TRUE
+#' )
+#' }
+#'
+#' @importFrom lme4 lmer fixef coef
+#' @export
+
+
 plot_lmm_regressions <- function(formula, data,
                                  colors = NULL,
                                  lty = 1, lwd = 2, pch = 16,
