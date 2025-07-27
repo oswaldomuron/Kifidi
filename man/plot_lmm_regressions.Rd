@@ -2,105 +2,111 @@
 % Please edit documentation in R/plot_lmm_regressions.R
 \name{plot_lmm_regressions}
 \alias{plot_lmm_regressions}
-\title{Plot Linear Mixed Model Regressions by Group}
+\title{Plot Linear Mixed Model (LMM) Regressions by Group}
 \usage{
 plot_lmm_regressions(
   formula,
   data,
   colors = NULL,
-  main = NULL,
-  xlab = NULL,
-  ylab = NULL,
-  legend = TRUE,
-  legend_position = "topright",
-  draw_group_lines = TRUE,
-  draw_overall_line = TRUE,
-  fixed_lty = 2,
-  fixed_col = "black",
-  fixed_lwd = 1,
-  label_equations = FALSE,
-  conf.int = FALSE,
-  add = FALSE,
-  lty = 2,
+  lty = 1,
   lwd = 2,
   pch = 16,
-  axes = TRUE,
-  ann = TRUE,
+  xlab = NULL,
+  ylab = NULL,
+  main = NULL,
+  draw_fixed_line = TRUE,
+  draw_group_lines = TRUE,
+  label_equations = TRUE,
+  legend_position = "topright",
+  legend = TRUE,
   return_model = FALSE,
   ...
 )
 }
 \arguments{
-\item{formula}{A formula object specifying the model, including a grouping term
-(e.g., \code{y ~ x + (1 | group)}).}
+\item{formula}{A mixed-effects model formula (e.g., \code{y ~ x + (1 | group)}).}
 
 \item{data}{A data frame containing the variables in the formula.}
 
-\item{colors}{Named vector of colors for groups. If NULL, colors are generated automatically.}
+\item{colors}{Optional vector of colors to use for each group. Defaults to rainbow.}
 
-\item{main}{Plot title.}
+\item{lty}{Line type(s) for regression lines.}
 
-\item{xlab}{Label for the x-axis.}
+\item{lwd}{Line width(s) for regression lines.}
 
-\item{ylab}{Label for the y-axis.}
+\item{pch}{Plotting symbol(s) for points.}
 
-\item{legend}{Logical; whether to display a legend.}
+\item{xlab}{Label for the x-axis. Defaults to variable name.}
 
-\item{legend_position}{Position of the legend (default "topright").}
+\item{ylab}{Label for the y-axis. Defaults to variable name.}
 
-\item{draw_group_lines}{Logical; whether to draw regression lines per group.}
+\item{main}{Title for the plot.}
 
-\item{draw_overall_line}{Logical; whether to draw overall fixed-effects regression line.}
+\item{draw_fixed_line}{Logical. Should the fixed effects regression line be drawn? Default is TRUE.}
 
-\item{fixed_lty}{Line type for fixed effects line (default 2).}
+\item{draw_group_lines}{Logical. Should regression lines be drawn for each group using conditional coefficients? Default is TRUE.}
 
-\item{fixed_col}{Color for fixed effects line (default "black").}
+\item{label_equations}{Logical. Should each group’s equation and R² be labeled in the legend? Default is TRUE.}
 
-\item{fixed_lwd}{Line width for fixed effects line (default 1).}
+\item{legend_position}{Position of the legend (e.g., \code{"topright"}).}
 
-\item{label_equations}{Logical; whether to label lines with regression equations.}
+\item{legend}{Logical. Should a legend be displayed? Default is TRUE.}
 
-\item{conf.int}{Logical; (Not currently implemented) whether to draw confidence intervals.}
+\item{return_model}{Logical. If TRUE, returns the fitted \code{lmer} model object.}
 
-\item{add}{Logical; whether to add to an existing plot.}
-
-\item{lty}{Line types for group lines; can be a single value or named vector.}
-
-\item{lwd}{Line widths for group lines; can be a single value or named vector.}
-
-\item{pch}{Plotting characters for points; can be single or named vector.}
-
-\item{axes}{Logical; whether to draw axes.}
-
-\item{ann}{Logical; whether to annotate plot with labels.}
-
-\item{return_model}{Logical; whether to return the fitted model object.}
-
-\item{...}{Additional graphical parameters passed to plot and points.}
+\item{...}{Additional graphical parameters passed to \code{plot()} or \code{points()}.}
 }
 \value{
-Invisibly returns NULL unless \code{return_model = TRUE}, in which case
-the fitted \code{lmer} model object is returned.
+Invisibly returns the model object if \code{return_model = TRUE}, otherwise NULL.
 }
 \description{
-Fits a linear mixed-effects model (LMM) using the provided formula and data,
-then plots the data points and regression lines for each group along with
-an optional overall fixed-effects regression line. Also calculates and displays
-marginal and conditional R² values.
+This function fits a linear mixed-effects model using \code{lme4::lmer()} and plots
+the data with regression lines and equations for each group.
+It supports random intercept, random slope, or both, and can label equations
+using per-group estimates of slope and intercept.
 }
 \details{
-This function requires the \code{lme4} package. It fits a linear mixed model
-based on the formula provided, where a grouping factor must be included as a
-random effect term (e.g., (1 | group)). It then plots the raw data points colored
-by group, overlays fitted regression lines per group, and optionally an overall
-fixed effects regression line. Marginal and conditional R² are calculated
-using variance components of the fitted model.
+The function fits a linear mixed-effects model using \code{lme4::lmer()} and
+extracts per-group slopes and intercepts using \code{coef(model)[[group_var]]},
+which provides group-specific estimates as reported by \code{lme4}.
+
+When \code{label_equations = TRUE}, each group line is labeled in the legend
+with its regression equation and R² from an ordinary least squares fit to that group.
+The fixed-effect line is plotted with a dashed black line if \code{draw_fixed_line = TRUE}.
+
+This function is useful for visualizing differences between groups in mixed-effects models.
 }
 \examples{
 \dontrun{
 library(lme4)
-data(sleepstudy)
-plot_lmm_regressions(Reaction ~ Days + (1 | Subject), sleepstudy)
+data <- your_dataframe
+
+# Random intercepts only: groups have their own intercepts but share a slope
+plot_lmm_regressions(
+  OM ~ pH + (1 | Vegetation_types),
+  data,
+  main = "Random Intercepts Only: Group-specific intercepts, common slope",
+  draw_group_lines = TRUE,
+  label_equations = TRUE
+)
+
+# Random slopes only: groups have their own slopes but share an intercept
+plot_lmm_regressions(
+  OM ~ pH + (pH - 1 | Vegetation_types),
+  data,
+  main = "Random Slopes Only: Group-specific slopes, common intercept",
+  draw_group_lines = TRUE,
+  label_equations = TRUE
+)
+
+# Random intercepts and slopes: groups have their own slopes and intercepts
+plot_lmm_regressions(
+  OM ~ pH + (pH | Vegetation_types),
+  data,
+  main = "Random Slopes and Intercepts: Group-specific slopes and intercepts",
+  draw_group_lines = TRUE,
+  label_equations = TRUE
+)
 }
 
 }
