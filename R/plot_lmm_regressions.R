@@ -1,87 +1,55 @@
-#' Plot Linear Mixed Model (LMM) Regressions by Group
+#' Plot Linear Mixed Model Regressions by Group
 #'
-#' This function fits a linear mixed-effects model using `lme4::lmer()` and plots
-#' the data along with regression lines and equations for each group.
-#' It supports models with random intercepts, random slopes, or both,
-#' and can label equations using per-group estimates of slope and intercept.
+#' This function fits a linear mixed-effects model using `lmer()` and plots group-level
+#' regression lines and optionally the fixed effect regression line. It includes group-specific
+#' points and regression lines, and can display model statistics such as Nakagawa R² values and AIC.
 #'
-#' @param formula A mixed-effects model formula of the form `y ~ x + (random_effect_structure)`,
-#'   such as `y ~ x + (1 | group)` or `y ~ x + (x | group)`. Currently, only one continuous fixed-effect predictor is supported.
-#' @param data A data frame containing the variables used in the formula.
-#' @param colors Optional vector of colors to use for each group. If not specified, a rainbow palette is used.
-#' @param lty Line type(s) for regression lines. Can be a single value or a vector for group-specific styles.
-#' @param lwd Line width(s) for regression lines. Can be a single value or a vector for group-specific widths.
-#' @param pch Plotting symbol(s) for data points. Can be a single value or a vector for group-specific symbols.
-#' @param xlab Label for the x-axis. Defaults to the predictor variable name.
-#' @param ylab Label for the y-axis. Defaults to the response variable name.
-#' @param main Title for the plot.
-#' @param draw_fixed_line Logical. If TRUE, draws the fixed-effects regression line as a dashed black line. Default is TRUE.
-#' @param draw_group_lines Logical. If TRUE, draws regression lines for each group using conditional model coefficients. Default is TRUE.
-#' @param label_equations Logical. If TRUE, includes each group's regression equation and R² in the legend. Default is TRUE.
-#' @param legend_position Position of the legend (e.g., `"topright"`, `"bottomleft"`). Passed to `legend()`.
-#' @param legend Logical. If TRUE, displays a legend. Default is TRUE.
-#' @param ann Logical. If FALSE, suppresses annotation of axes (titles and labels). Passed to `plot()`. Default is TRUE.
-#' @param axes Logical. If FALSE, suppresses drawing of axes. Passed to `plot()`. Default is TRUE.
-#' @param return_model Logical. If TRUE, returns the fitted `lmer` model object. Default is FALSE.
+#' @param formula A formula specifying the model (e.g., `y ~ x + (x | group)`).
+#' @param data A data frame containing the variables in the model.
+#' @param colors A vector of colors for each group. Defaults to rainbow colors if not specified.
+#' @param lty Line type(s) for regression lines. Can be a single value or vector.
+#' @param lwd Line width(s) for regression lines. Can be a single value or vector.
+#' @param pch Point character(s) for data points. Can be a single value or vector.
+#' @param xlab Label for the x-axis. If `NULL`, uses the predictor variable name.
+#' @param ylab Label for the y-axis. If `NULL`, uses the response variable name.
+#' @param main Plot title.
+#' @param draw_fixed_line Logical; if `TRUE`, adds the fixed-effect regression line.
+#' @param draw_group_lines Logical; if `TRUE`, draws regression lines for each group.
+#' @param label_equations Logical; if `TRUE`, includes regression equations in the legend.
+#' @param legend_position Position of the legend (default is `"topright"`; not currently used—legend is placed in right margin).
+#' @param inset Inset spacing for the legend; default is 0.
+#' @param xpd Logical; whether to allow plotting outside the plot region. Defaults to `TRUE`.
+#' @param ann Logical; whether to annotate the axes (titles, labels).
+#' @param axes Logical; whether to draw axes.
+#' @param legend Logical; whether to display the legend.
+#' @param return_model Logical; if `TRUE`, returns the fitted `lmer` model object.
 #' @param ... Additional graphical parameters passed to `plot()` or `points()`.
 #'
 #' @details
-#' This function fits a linear mixed-effects model using `lme4::lmer()` and
-#' extracts group-specific slopes and intercepts using `coef(model)[[group_var]]`,
-#' as reported by `lme4`. It assumes only a single continuous fixed-effect predictor.
+#' This function plots both the individual group-level data and their corresponding regression lines
+#' from a linear mixed model. It optionally adds the fixed-effect regression line (representing
+#' population-level trend), and can annotate the plot with R² statistics (marginal and conditional) and AIC.
 #'
-#' When `label_equations = TRUE`, each group line is labeled in the legend with
-#' its regression equation and R², calculated from an ordinary least squares fit to that group.
-#' The overall fixed-effects regression line is drawn with a dashed black line if `draw_fixed_line = TRUE`.
+#' It uses `lme4::lmer()` to fit the model and `MuMIn::r.squaredGLMM()` to compute Nakagawa's R².
 #'
-#' This visualization is particularly useful for understanding how group-specific trends differ
-#' from the overall population trend in mixed-effects models.
+#' @return
+#' If `return_model = TRUE`, the fitted `lmer` model object is returned. Otherwise, the function returns `NULL` invisibly.
 #'
-#' @return Invisibly returns the model object of class `lmerMod` if `return_model = TRUE`; otherwise, returns `NULL`.
+#' @import lme4
+#' @import MuMIn
+#' @export
 #'
 #' @examples
 #' \dontrun{
-#' library(lme4)
-#'
-#' # Simulated example
-#' set.seed(123)
-#' df <- data.frame(
-#'   group = rep(LETTERS[1:3], each = 20),
-#'   x = rep(rnorm(20, mean = 5, sd = 1), 3),
-#'   y = unlist(lapply(1:3, function(i) 2 + i + 0.5 * rnorm(20, x = x, sd = 1)))
-#' )
-#'
-#' # Random intercepts only
-#' plot_lmm_regressions(
-#'   y ~ x + (1 | group),
-#'   data = df,
-#'   main = "Random Intercepts Only: Group-specific intercepts, shared slope",
-#'   draw_group_lines = TRUE,
-#'   label_equations = TRUE
-#' )
-#'
-#' # Random slopes only
-#' plot_lmm_regressions(
-#'   y ~ x + (x - 1 | group),
-#'   data = df,
-#'   main = "Random Slopes Only: Group-specific slopes, shared intercept",
-#'   draw_group_lines = TRUE,
-#'   label_equations = TRUE
-#' )
-#'
-#' # Random intercepts and slopes
-#' plot_lmm_regressions(
-#'   y ~ x + (x | group),
-#'   data = df,
-#'   main = "Random Slopes and Intercepts",
-#'   draw_group_lines = TRUE,
-#'   label_equations = TRUE
-#' )
+#'   library(lme4)
+#'   library(MuMIn)
+#'   data(sleepstudy)
+#'   plot_lmm_regressions(Reaction ~ Days + (Days | Subject),
+#'                        data = sleepstudy,
+#'                        draw_fixed_line = TRUE,
+#'                        label_equations = TRUE,
+#'                        show_aic = TRUE)
 #' }
-#'
-#' @importFrom lme4 lmer
-#' @importFrom stats lm formula
-#' @export
 
 
 
@@ -90,92 +58,166 @@ plot_lmm_regressions <- function(formula, data,
                                  colors = NULL,
                                  lty = 1, lwd = 2, pch = 16,
                                  xlab = NULL, ylab = NULL, main = NULL,
-                                 draw_fixed_line = TRUE, draw_group_lines = TRUE,
-                                 label_equations = TRUE, legend_position = "topright",
-                                 inset = 0,      # added
-                                 xpd = TRUE,     # added
+                                 draw_fixed_line = FALSE, draw_group_lines = TRUE,
+                                 label_equations = FALSE, legend_position = "topright",
+                                 inset = 0,
+                                 xpd = TRUE,
                                  ann = TRUE, axes = TRUE,
                                  legend = TRUE, return_model = FALSE, ...) {
+  # Check that required packages are installed; stop if not
   if (!requireNamespace("lme4", quietly = TRUE)) {
     stop("Please install the 'lme4' package.")
   }
-  library(lme4)
+  if (!requireNamespace("MuMIn", quietly = TRUE)) {
+    stop("Please install the 'MuMIn' package.")
+  }
 
+  # Load packages
+  library(lme4)
+  library(MuMIn)
+
+  # Save current graphical parameters and restore them on function exit
   op <- par(no.readonly = TRUE)
   on.exit(par(op))
+
+  # Set margins: extra right margin (15) to make space for legend outside plot area
+  par(mar = c(5, 4, 4, 15), oma = c(0, 0, 0, 4))
+  # Allow plotting outside the plot region (for legend positioning)
   par(xpd = xpd)
 
+  # Fit linear mixed model with specified formula and data
   model <- lmer(formula, data = data)
+
+  # Extract model frame, response variable (y), and predictor variable (x)
   mf <- model.frame(model)
   y <- model.response(mf)
-  x_var <- all.vars(formula)[2]
+  x_var <- all.vars(formula)[2]    # Get name of predictor variable (assumes two-variable formula)
   x <- mf[[x_var]]
 
-  group_var <- names(getME(model, "flist"))[1]
+  # Extract grouping factor (random effect grouping variable)
+  group_var <- names(getME(model, "flist"))[1]  # first grouping factor name
   group <- mf[[group_var]]
   levels_group <- levels(group)
   n_groups <- length(levels_group)
 
+  # Set colors for groups; if not provided, use rainbow palette
   if (is.null(colors)) colors <- rainbow(n_groups)
-  colors <- rep(colors, length.out = n_groups)
+  colors <- rep(colors, length.out = n_groups) # repeat if not enough colors
+
+  # Set line types, widths, and point characters for groups, repeating if needed
   lty_vec <- rep(lty, length.out = n_groups)
   lwd_vec <- rep(lwd, length.out = n_groups)
   pch_vec <- rep(pch, length.out = n_groups)
 
+  # Create an empty plot with proper labels and axes
   plot(x, y, type = "n",
        xlab = ifelse(is.null(xlab), x_var, xlab),
        ylab = ifelse(is.null(ylab), all.vars(formula)[1], ylab),
        main = main, ann = ann, axes = axes, ...)
 
+  # Extract fixed effect coefficients
   fe <- fixef(model)
+  # Extract group-level coefficients (random intercepts and slopes)
   coef_df <- coef(model)[[group_var]]
-  legend_labels <- character()
 
+  # Initialize vectors to store legend information
+  legend_labels <- character(0)
+  legend_colors <- character(0)
+  legend_lty <- numeric(0)
+  legend_lwd <- numeric(0)
+  legend_pch <- numeric(0)
+
+  # Loop over each group to plot data points and regression lines
   for (i in seq_along(levels_group)) {
     g <- levels_group[i]
-    idx <- which(group == g)
+    idx <- which(group == g)    # indices for current group
     xi <- x[idx]; yi <- y[idx]
+    # Plot points for group
     points(xi, yi, col = colors[i], pch = pch_vec[i], ...)
 
+    # Plot group regression lines if requested
     if (draw_group_lines) {
       intercept <- coef_df[g, "(Intercept)"]
-      if (ncol(coef_df) > 1) {
+      # If slope exists for predictor variable, calculate line points
+      if (ncol(coef_df) > 1 && x_var %in% colnames(coef_df)) {
         slope <- coef_df[g, x_var]
-        x_seq <- seq(min(xi), max(xi), length.out = 100)
+        x_seq <- seq(min(xi), max(xi), length.out = 100) # fine grid for line
         y_seq <- intercept + slope * x_seq
+        # Draw group regression line
         lines(x_seq, y_seq, col = colors[i], lty = lty_vec[i], lwd = lwd_vec[i])
       } else {
         slope <- NA
       }
 
+      # Create legend label with equation if requested
       if (label_equations && !is.na(slope)) {
-        r2 <- summary(lm(yi ~ xi))$r.squared
-        label <- sprintf("%s: y = %.3f x + %.3f, R² = %.3f",
-                         g, slope, intercept, r2)
+        lbl <- sprintf("%s: y = %.3f x + %.3f", g, slope, intercept)
       } else {
-        label <- g
+        lbl <- g
       }
-      legend_labels[i] <- label
+
+      # Append legend info for group
+      legend_labels <- c(legend_labels, lbl)
+      legend_colors <- c(legend_colors, colors[i])
+      legend_lty <- c(legend_lty, lty_vec[i])
+      legend_lwd <- c(legend_lwd, lwd_vec[i])
+      legend_pch <- c(legend_pch, pch_vec[i])
     }
   }
 
+  # Optionally draw fixed effect regression line (population average)
   if (draw_fixed_line && length(fe) > 1) {
     x_seq <- seq(min(x), max(x), length.out = 100)
     y_seq <- fe[1] + fe[2] * x_seq
-    lines(x_seq, y_seq, col = "black", lty = 2, lwd = 2)
-    if (label_equations) {
-      label <- sprintf("Fixed: y = %.3f x + %.3f", fe[2], fe[1])
-      legend_labels <- c(legend_labels, label)
-      colors <- c(colors, "black")
-      lty_vec <- c(lty_vec, 2); lwd_vec <- c(lwd_vec, 2); pch_vec <- c(pch_vec, NA)
+    lines(x_seq, y_seq, col = "black", lty = 2, lwd = 2)  # dashed black line
+
+    # Label for fixed effect line
+    fixed_label <- if (label_equations) {
+      sprintf("Fixed: y = %.3f x + %.3f", fe[2], fe[1])
+    } else {
+      "Fixed effect"
     }
+
+    # Append legend info for fixed effect
+    legend_labels <- c(legend_labels, fixed_label)
+    legend_colors <- c(legend_colors, "black")
+    legend_lty <- c(legend_lty, 2)
+    legend_lwd <- c(legend_lwd, 2)
+    legend_pch <- c(legend_pch, NA)
   }
 
+  # Calculate Nakagawa's R² (marginal and conditional) for mixed models
+  R2 <- MuMIn::r.squaredGLMM(model)
+  R2m <- R2[1, "R2m"]  # marginal R² (fixed effects only)
+  R2c <- R2[1, "R2c"]  # conditional R² (fixed + random effects)
+
+  # Calculate AIC for model
+  aic_value <- AIC(model)
+
+  # Add R² values and AIC as additional legend entries (with empty line for spacing)
+  legend_labels <- c(legend_labels, "",
+                     sprintf("Nakagawa R² (c): %.3f", R2c),
+                     sprintf("Nakagawa R² (m): %.3f", R2m),
+                     sprintf("AIC: %.1f", aic_value))
+  legend_colors <- c(legend_colors, NA, NA, NA, NA)
+  legend_lty <- c(legend_lty, NA, NA, NA, NA)
+  legend_lwd <- c(legend_lwd, NA, NA, NA, NA)
+  legend_pch <- c(legend_pch, NA, NA, NA, NA)
+
+
+  # Add legend to the right of the plot (in extended margin)
   if (legend) {
-    legend(legend_position, legend = legend_labels,
-           col = colors, lty = lty_vec, lwd = lwd_vec,
-           pch = pch_vec, bty = "o", inset = inset)
+    usr <- par("usr")  # get plot coordinates: c(xmin, xmax, ymin, ymax)
+    # Place legend just outside right edge (2% offset)
+    x_legend <- usr[2] + 0.02 * (usr[2] - usr[1])
+    y_legend <- usr[4]  # top of y-axis
+
+    legend(x = x_legend, y = y_legend, legend = legend_labels,
+           col = legend_colors, lty = legend_lty, lwd = legend_lwd,
+           pch = legend_pch, bty = "o", xpd = TRUE,
+           y.intersp = 1.2, adj = c(0, 1)) # left-top aligned
   }
 
+  # Optionally return fitted model object
   if (return_model) return(model) else invisible(NULL)
 }
