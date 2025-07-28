@@ -24,6 +24,10 @@ plot_lmm_regressions(
   axes = TRUE,
   legend = TRUE,
   return_model = FALSE,
+  mar = c(5, 4, 4, 15),
+  oma = c(0, 0, 0, 4),
+  xlim = NULL,
+  ylim = NULL,
   ...
 )
 }
