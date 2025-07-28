@@ -66,6 +66,8 @@ plot_lmm_regressions <- function(formula, data,
                                  legend = TRUE, return_model = FALSE,
                                  mar = c(5,4,4,15),
                                  oma = c(0,0,0,4),
+                                 xlim = NULL,
+                                 ylim = NULL,
                                  ...) {
   # Check that required packages are installed; stop if not
   if (!requireNamespace("lme4", quietly = TRUE)) {
@@ -116,7 +118,8 @@ plot_lmm_regressions <- function(formula, data,
   plot(x, y, type = "n",
        xlab = ifelse(is.null(xlab), x_var, xlab),
        ylab = ifelse(is.null(ylab), all.vars(formula)[1], ylab),
-       main = main, ann = ann, axes = axes, ...)
+       main = main, ann = ann, axes = axes,
+       xlim = xlim,ylim = ylim, ...)
 
   # Extract fixed effect coefficients
   fe <- fixef(model)
