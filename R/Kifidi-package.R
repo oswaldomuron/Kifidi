@@ -9,8 +9,10 @@
 #' \describe{
 #'   \item{\code{\link{summarize_data}}}{Provides statistical summaries (mean, SD, N, etc.) of numeric data grouped by one or two categorical variables.}
 #'   \item{\code{\link{plot_means}}}{Creates bar plots of means with optional error bars.}
-#'   \item{\code{\link{plot_group_regressions}}}{Performs and plots linear regressions grouped by a factor variable.}
 #'   \item{\code{\link{counts}}}{Generates frequency tables or counts of observations by grouping variables.}
+#'   \item{\code{\link{plot_group_regressions}}}{Performs and plots linear regressions grouped by a factor variable.}
+#'   \item{\code{\link{plot_lmm_regressions}}}{Plots group-level and fixed-effect regression lines from a linear mixed-effects model.}
+
 #' }
 #'
 #' @author Oswald Omuron

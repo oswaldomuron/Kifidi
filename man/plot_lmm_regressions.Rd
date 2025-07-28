@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot_lmm_regressions.R
 \name{plot_lmm_regressions}
 \alias{plot_lmm_regressions}
-\title{Plot Linear Mixed Model (LMM) Regressions by Group}
+\title{Plot Linear Mixed Model Regressions by Group}
 \usage{
 plot_lmm_regressions(
   formula,
@@ -14,99 +14,84 @@ plot_lmm_regressions(
   xlab = NULL,
   ylab = NULL,
   main = NULL,
-  draw_fixed_line = TRUE,
+  draw_fixed_line = FALSE,
   draw_group_lines = TRUE,
-  label_equations = TRUE,
+  label_equations = FALSE,
   legend_position = "topright",
+  inset = 0,
+  xpd = TRUE,
+  ann = TRUE,
+  axes = TRUE,
   legend = TRUE,
   return_model = FALSE,
   ...
 )
 }
 \arguments{
-\item{formula}{A mixed-effects model formula (e.g., \code{y ~ x + (1 | group)}).}
+\item{formula}{A formula specifying the model (e.g., \code{y ~ x + (x | group)}).}
 
-\item{data}{A data frame containing the variables in the formula.}
+\item{data}{A data frame containing the variables in the model.}
 
-\item{colors}{Optional vector of colors to use for each group. Defaults to rainbow.}
+\item{colors}{A vector of colors for each group. Defaults to rainbow colors if not specified.}
 
-\item{lty}{Line type(s) for regression lines.}
+\item{lty}{Line type(s) for regression lines. Can be a single value or vector.}
 
-\item{lwd}{Line width(s) for regression lines.}
+\item{lwd}{Line width(s) for regression lines. Can be a single value or vector.}
 
-\item{pch}{Plotting symbol(s) for points.}
+\item{pch}{Point character(s) for data points. Can be a single value or vector.}
 
-\item{xlab}{Label for the x-axis. Defaults to variable name.}
+\item{xlab}{Label for the x-axis. If \code{NULL}, uses the predictor variable name.}
 
-\item{ylab}{Label for the y-axis. Defaults to variable name.}
+\item{ylab}{Label for the y-axis. If \code{NULL}, uses the response variable name.}
 
-\item{main}{Title for the plot.}
+\item{main}{Plot title.}
 
-\item{draw_fixed_line}{Logical. Should the fixed effects regression line be drawn? Default is TRUE.}
+\item{draw_fixed_line}{Logical; if \code{TRUE}, adds the fixed-effect regression line.}
 
-\item{draw_group_lines}{Logical. Should regression lines be drawn for each group using conditional coefficients? Default is TRUE.}
+\item{draw_group_lines}{Logical; if \code{TRUE}, draws regression lines for each group.}
 
-\item{label_equations}{Logical. Should each group’s equation and R² be labeled in the legend? Default is TRUE.}
+\item{label_equations}{Logical; if \code{TRUE}, includes regression equations in the legend.}
 
-\item{legend_position}{Position of the legend (e.g., \code{"topright"}).}
+\item{legend_position}{Position of the legend (default is \code{"topright"}; not currently used—legend is placed in right margin).}
 
-\item{legend}{Logical. Should a legend be displayed? Default is TRUE.}
+\item{inset}{Inset spacing for the legend; default is 0.}
 
-\item{return_model}{Logical. If TRUE, returns the fitted \code{lmer} model object.}
+\item{xpd}{Logical; whether to allow plotting outside the plot region. Defaults to \code{TRUE}.}
+
+\item{ann}{Logical; whether to annotate the axes (titles, labels).}
+
+\item{axes}{Logical; whether to draw axes.}
+
+\item{legend}{Logical; whether to display the legend.}
+
+\item{return_model}{Logical; if \code{TRUE}, returns the fitted \code{lmer} model object.}
 
 \item{...}{Additional graphical parameters passed to \code{plot()} or \code{points()}.}
 }
 \value{
-Invisibly returns the model object if \code{return_model = TRUE}, otherwise NULL.
+If \code{return_model = TRUE}, the fitted \code{lmer} model object is returned. Otherwise, the function returns \code{NULL} invisibly.
 }
 \description{
-This function fits a linear mixed-effects model using \code{lme4::lmer()} and plots
-the data with regression lines and equations for each group.
-It supports random intercept, random slope, or both, and can label equations
-using per-group estimates of slope and intercept.
+This function fits a linear mixed-effects model using \code{lmer()} and plots group-level
+regression lines and optionally the fixed effect regression line. It includes group-specific
+points and regression lines, and can display model statistics such as Nakagawa R² values and AIC.
 }
 \details{
-The function fits a linear mixed-effects model using \code{lme4::lmer()} and
-extracts per-group slopes and intercepts using \code{coef(model)[[group_var]]},
-which provides group-specific estimates as reported by \code{lme4}.
+This function plots both the individual group-level data and their corresponding regression lines
+from a linear mixed model. It optionally adds the fixed-effect regression line (representing
+population-level trend), and can annotate the plot with R² statistics (marginal and conditional) and AIC.
 
-When \code{label_equations = TRUE}, each group line is labeled in the legend
-with its regression equation and R² from an ordinary least squares fit to that group.
-The fixed-effect line is plotted with a dashed black line if \code{draw_fixed_line = TRUE}.
-
-This function is useful for visualizing differences between groups in mixed-effects models.
+It uses \code{lme4::lmer()} to fit the model and \code{MuMIn::r.squaredGLMM()} to compute Nakagawa's R².
 }
 \examples{
 \dontrun{
-library(lme4)
-data <- your_dataframe
-
-# Random intercepts only: groups have their own intercepts but share a slope
-plot_lmm_regressions(
-  OM ~ pH + (1 | Vegetation_types),
-  data,
-  main = "Random Intercepts Only: Group-specific intercepts, common slope",
-  draw_group_lines = TRUE,
-  label_equations = TRUE
-)
-
-# Random slopes only: groups have their own slopes but share an intercept
-plot_lmm_regressions(
-  OM ~ pH + (pH - 1 | Vegetation_types),
-  data,
-  main = "Random Slopes Only: Group-specific slopes, common intercept",
-  draw_group_lines = TRUE,
-  label_equations = TRUE
-)
-
-# Random intercepts and slopes: groups have their own slopes and intercepts
-plot_lmm_regressions(
-  OM ~ pH + (pH | Vegetation_types),
-  data,
-  main = "Random Slopes and Intercepts: Group-specific slopes and intercepts",
-  draw_group_lines = TRUE,
-  label_equations = TRUE
-)
+  library(lme4)
+  library(MuMIn)
+  data(sleepstudy)
+  plot_lmm_regressions(Reaction ~ Days + (Days | Subject),
+                       data = sleepstudy,
+                       draw_fixed_line = TRUE,
+                       label_equations = TRUE,
+                       show_aic = TRUE)
 }
-
 }
