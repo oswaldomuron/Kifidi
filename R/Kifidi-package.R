@@ -11,7 +11,9 @@
 #'   \item{\code{\link{plot_means}}}{Creates bar plots of means with optional error bars.}
 #'   \item{\code{\link{counts}}}{Generates frequency tables or counts of observations by grouping variables.}
 #'   \item{\code{\link{plot_group_regressions}}}{Performs and plots linear regressions grouped by a factor variable.}
-#'   \item{\code{\link{plot_lmm_regressions}}}{Plots group-level and fixed-effect regression lines from a linear mixed-effects model.}
+#'   \item{\code{\link{plot_lmm_regressions}}}{Plots group-level and fixed-effect regression lines from a linear mixed-effects modelin lme4 package with lmer().}
+#'   \item{\code{\link{plot_lme_regressions}}}{Plots group-level lines from a linear mixed-effects model in nlme with lme().}
+
 
 #' }
 #'
