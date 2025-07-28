@@ -47,31 +47,7 @@
 #' @importFrom graphics plot lines legend layout par box plot.new
 #' @importFrom stats AIC complete.cases
 #' @export
-#' 
-plot_lme_regressions <- function(formula, random, data,
-                                 legend = TRUE,
-                                 legend_position = "right",
-                                 inset = 0,
-                                 return_model = FALSE,
-                                 lty = NULL,
-                                 pch = 16,
-                                 axes = TRUE,
-                                 ann = TRUE,
-                                 xlim = NULL,
-                                 ylim = NULL,
-                                 main = NULL,
-                                 xlab = NULL,
-                                 ylab = NULL,
-                                 col = NULL,
-                                 oma = c(0, 0, 0, 0),
-                                 mar = c(5, 4, 4, 2),
-                                 ...) {
-  # Function body unchanged
-  # ...
-}
-
-
-
+#'
 
 plot_lme_regressions <- function(formula, random, data,
                                  legend = TRUE,
@@ -91,11 +67,11 @@ plot_lme_regressions <- function(formula, random, data,
                                  oma = c(0, 0, 0, 0),
                                  mar = c(5, 4, 4, 2),
                                  ...) {
-  
+
   if (!requireNamespace("nlme", quietly = TRUE)) {
     stop("Please install the 'nlme' package to use this function.")
   }
-  
+
   get_group_var <- function(random_arg) {
     if (is.list(random_arg)) {
       if (length(random_arg) != 1) stop("Only single grouping factor supported.")
@@ -110,31 +86,31 @@ plot_lme_regressions <- function(formula, random, data,
     }
     return(group_var)
   }
-  
+
   response_var <- all.vars(formula)[1]
   predictor_var <- all.vars(formula)[2]
   group_var <- get_group_var(random)
-  
+
   vars_needed <- c(response_var, predictor_var, group_var)
   data_clean <- data[complete.cases(data[, vars_needed]), vars_needed]
   if (nrow(data_clean) == 0) stop("No complete cases found for the specified variables.")
   data_clean[[group_var]] <- as.factor(data_clean[[group_var]])
-  
+
   model <- nlme::lme(fixed = formula, random = random, data = data_clean, ...)
-  
+
   fixed_coef <- nlme::fixef(model)
   re <- nlme::ranef(model)
   groups <- rownames(re)
-  
+
   # Set styles
   n_groups <- length(groups)
   colors <- if (is.null(col)) rainbow(n_groups) else rep(col, length.out = n_groups)
   ltys   <- if (is.null(lty)) rep(1, n_groups) else rep(lty, length.out = n_groups)
   pchs   <- if (is.null(pch)) rep(1, n_groups) else rep(pch, length.out = n_groups)
-  
+
   n_re <- ncol(re)
   colnames_re <- colnames(re)
-  
+
   labels <- character(n_groups)
   for (i in seq_along(groups)) {
     if (n_re == 2) {
@@ -154,7 +130,7 @@ plot_lme_regressions <- function(formula, random, data,
     }
     labels[i] <- sprintf("%s: y = %.3f %+ .3f x", groups[i], intercept_i, slope_i)
   }
-  
+
   # R2 calculation
   R2m <- NA
   R2c <- NA
@@ -163,25 +139,25 @@ plot_lme_regressions <- function(formula, random, data,
     R2m <- r2[1]
     R2c <- r2[2]
   }
-  
+
   # Save and set layout
   old_par <- par(no.readonly = TRUE)
   on.exit(par(old_par))
-  
+
   layout(matrix(c(1, 2), nrow = 1), widths = c(4, 2))
   par(oma = oma, mar = mar)
-  
+
   # Set labels
   if (is.null(main)) main <- paste("LME Regression:", deparse(formula), "\nRandom effect:", deparse(random))
   if (is.null(xlab)) xlab <- predictor_var
   if (is.null(ylab)) ylab <- response_var
-  
+
   x_data <- data_clean[[predictor_var]]
   y_data <- data_clean[[response_var]]
-  
+
   if (is.null(xlim)) xlim <- range(x_data, na.rm = TRUE)
   if (is.null(ylim)) ylim <- range(y_data, na.rm = TRUE)
-  
+
   # Main plot
   plot(x_data, y_data,
        col = colors[as.numeric(data_clean[[group_var]])],
@@ -192,14 +168,14 @@ plot_lme_regressions <- function(formula, random, data,
        ylab = if (ann) ylab else "",
        axes = axes,
        ...)
-  
+
   if (!axes) box()
-  
+
   for (i in seq_along(groups)) {
     grp <- groups[i]
     x_grp <- data_clean[data_clean[[group_var]] == grp, predictor_var]
     x_vals <- seq(min(x_grp), max(x_grp), length.out = 100)
-    
+
     if (n_re == 2) {
       intercept_i <- fixed_coef[1] + re[grp, "(Intercept)"]
       slope_i <- fixed_coef[2] + re[grp, predictor_var]
@@ -215,15 +191,15 @@ plot_lme_regressions <- function(formula, random, data,
       intercept_i <- fixed_coef[1]
       slope_i <- fixed_coef[2]
     }
-    
+
     y_vals <- intercept_i + slope_i * x_vals
     lines(x_vals, y_vals, col = colors[i], lwd = 2, lty = ltys[i])
   }
-  
+
   # Get AIC
   model_aic <- AIC(model)
-  
-  
+
+
   # Legend panel
   par(mar = c(0, 0, 0, 0))
   plot.new()
@@ -239,6 +215,6 @@ plot_lme_regressions <- function(formula, random, data,
            inset = inset,
            cex = 0.7)
   }
-  
+
   if (return_model) return(model) else invisible(NULL)
 }
