@@ -63,7 +63,10 @@ plot_lmm_regressions <- function(formula, data,
                                  inset = 0,
                                  xpd = TRUE,
                                  ann = TRUE, axes = TRUE,
-                                 legend = TRUE, return_model = FALSE, ...) {
+                                 legend = TRUE, return_model = FALSE,
+                                 mar = c(5,4,4,15),
+                                 oma = c(0,0,0,4),
+                                 ...) {
   # Check that required packages are installed; stop if not
   if (!requireNamespace("lme4", quietly = TRUE)) {
     stop("Please install the 'lme4' package.")
@@ -80,8 +83,8 @@ plot_lmm_regressions <- function(formula, data,
   op <- par(no.readonly = TRUE)
   on.exit(par(op))
 
-  # Set margins: extra right margin (15) to make space for legend outside plot area
-  par(mar = c(5, 4, 4, 15), oma = c(0, 0, 0, 4))
+  # Set margins to the defaults: extra right margin (15) to make space for legend outside plot area
+  par(mar = mar, oma = oma)
   # Allow plotting outside the plot region (for legend positioning)
   par(xpd = xpd)
 
