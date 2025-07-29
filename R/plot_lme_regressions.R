@@ -143,7 +143,7 @@ plot_lme_regressions <- function(model_or_formula,
        main = if (ann) main else NULL,
        xlab = if (ann) xlab else "",
        ylab = if (ann) ylab else "",
-       axes = axes)
+       axes = axes,...)
 
   #if (!axes) box()
 
