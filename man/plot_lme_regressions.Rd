@@ -2,12 +2,12 @@
 % Please edit documentation in R/plot_lme_regressions.R
 \name{plot_lme_regressions}
 \alias{plot_lme_regressions}
-\title{Plot Linear Mixed-Effects Model Regressions by Group}
+\title{Plot Linear Mixed-Effects (LME) Regressions}
 \usage{
 plot_lme_regressions(
-  formula,
-  random,
-  data,
+  model_or_formula,
+  random = NULL,
+  data = NULL,
   legend = TRUE,
   legend_position = "right",
   inset = 0,
@@ -28,61 +28,55 @@ plot_lme_regressions(
 )
 }
 \arguments{
-\item{formula}{A two-sided formula specifying the fixed effects (e.g., \code{y ~ x}).}
-
-\item{random}{A formula or list specifying the random effects (e.g., \code{~ 1 | group}).}
+\item{random}{A random effects formula, e.g. \code{~ x | group}.}
 
 \item{data}{A data frame containing the variables in the model.}
 
-\item{legend}{Logical, whether to display the legend with group regression info. Default is \code{TRUE}.}
+\item{legend}{Logical, whether to display a legend (default = TRUE).}
 
-\item{legend_position}{Position of the legend. One of \code{"topright"}, \code{"bottomright"}, \code{"bottomleft"}, \code{"topleft"}, \code{"right"}, \code{"left"}, \code{"top"}, \code{"bottom"}. Default is \code{"right"}.}
+\item{legend_position}{Position of the legend ("right", "topright", etc.).}
 
-\item{inset}{Numeric scalar or vector indicating how much to inset the legend from the margins (in fractions of the plot region). Default is 0.}
+\item{inset}{Inset for the legend.}
 
-\item{return_model}{Logical, whether to return the fitted \code{nlme::lme} model object. Default is \code{FALSE}.}
+\item{return_model}{Logical, if TRUE returns the fitted model.}
 
-\item{lty}{Line type(s) for regression lines. Can be a vector recycled across groups. Default is \code{NULL} which uses \code{1}.}
+\item{lty}{Line type for regression lines.}
 
-\item{pch}{Plotting character(s) for points. Can be a vector recycled across groups. Default is 16.}
+\item{pch}{Plotting character for data points.}
 
-\item{axes}{Logical, whether to draw axes. Default is \code{TRUE}.}
+\item{axes}{Logical, whether to draw axes (default = TRUE).}
 
-\item{ann}{Logical, whether to annotate the plot with titles and axis labels. Default is \code{TRUE}.}
+\item{ann}{Logical, whether to include plot annotations (default = TRUE).}
 
-\item{xlim}{Numeric vector of length 2 specifying x-axis limits. Default is \code{NULL} (automatic).}
+\item{xlim, ylim}{Axis limits for the plot.}
 
-\item{ylim}{Numeric vector of length 2 specifying y-axis limits. Default is \code{NULL} (automatic).}
+\item{main}{Plot title.}
 
-\item{main}{Main title for the plot. Default is \code{NULL}, which generates a default title.}
+\item{xlab, ylab}{Axis labels.}
 
-\item{xlab}{Label for the x-axis. Default is \code{NULL}, which uses the predictor variable name.}
+\item{col}{Colors for groups.}
 
-\item{ylab}{Label for the y-axis. Default is \code{NULL}, which uses the response variable name.}
+\item{oma}{Outer margin areas.}
 
-\item{col}{Colors for groups. Can be a vector recycled across groups. Default is \code{NULL} which uses \code{rainbow()} palette.}
+\item{mar}{Margins of the plot.}
 
-\item{oma}{Numeric vector of length 4 giving outer margins in lines (bottom, left, top, right). Default is \code{c(0, 0, 0, 0)}.}
+\item{...}{Additional arguments passed to \code{nlme::lme()} or \code{plot()}.}
 
-\item{mar}{Numeric vector of length 4 giving margins in lines (bottom, left, top, right). Default is \code{c(5, 4, 4, 2)}.}
-
-\item{...}{Additional arguments passed to \code{nlme::lme} and \code{plot}.}
+\item{formula}{A formula specifying the fixed effects, e.g. \code{y ~ x}.}
 }
 \value{
-Invisibly returns \code{NULL} by default. If \code{return_model = TRUE}, returns the fitted \code{nlme::lme} model object.
+Invisibly returns \code{NULL} unless \code{return_model = TRUE}, in which case
+it returns the fitted \code{nlme::lme} model object.
 }
 \description{
-Fits a linear mixed-effects model (LME) using the \code{nlme::lme} function
-and plots the regression lines for each random effect group along with the data points.
-Optionally displays a legend with regression equations, R² (marginal and conditional), and AIC.
+This function fits a linear mixed-effects model using \pkg{nlme} and
+plots the regression lines for each group, including fixed and random
+effects, R² values, and AIC.
 }
 \details{
-The function fits a linear mixed-effects model to the data with specified fixed and random effects,
-extracts group-level regression coefficients (intercept and slope), and plots data points colored and
-shaped by group. It then overlays regression lines for each group.
-
-If the \pkg{MuMIn} package is installed, it also calculates marginal and conditional R² values.
-The legend shows regression equations for each group, R² values, and the AIC of the fitted model.
+The function automatically computes and plots regression lines for each
+grouping level based on both fixed and random effects. It also displays
+marginal (R²m) and conditional (R²c) R-squared values and the AIC of the model.
 }
 \examples{
 \dontrun{

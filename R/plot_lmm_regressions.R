@@ -35,8 +35,8 @@
 #' @return
 #' If `return_model = TRUE`, the fitted `lmer` model object is returned. Otherwise, the function returns `NULL` invisibly.
 #'
-#' @import lme4
-#' @import MuMIn
+#' @importFrom lme4 lmer fixef ranef
+#' @importFrom MuMIn r.squaredGLMM
 #' @export
 #'
 #' @examples
