@@ -90,7 +90,12 @@ plot_lme_regressions <- function(model_or_formula,
 
   data_clean <- model$data[complete.cases(model$data[, c(response_var, predictor_var, group_var)]),
                            c(response_var, predictor_var, group_var)]
-  data_clean[[group_var]] <- as.factor(data_clean[[group_var]])
+
+
+  ### 🔹 FIXED HERE (1): Ensure factor levels match random effects order
+  data_clean[[group_var]] <- factor(data_clean[[group_var]], levels = rownames(nlme::ranef(model)))
+  groups <- levels(data_clean[[group_var]])
+
 
   # Fixed and random effects
   fixed_coef <- nlme::fixef(model)
