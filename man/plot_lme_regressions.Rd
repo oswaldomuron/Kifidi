@@ -14,6 +14,7 @@ plot_lme_regressions(
   return_model = FALSE,
   lty = NULL,
   pch = 16,
+  lwd = 2,
   axes = TRUE,
   ann = TRUE,
   xlim = NULL,
@@ -24,13 +25,20 @@ plot_lme_regressions(
   col = NULL,
   oma = c(0, 0, 0, 0),
   mar = c(5, 4, 4, 2),
+  draw_fixed_effects = FALSE,
+  fixed_col = "black",
+  fixed_lty = 2,
+  fixed_lwd = 3,
+  fixed_confi = FALSE,
   ...
 )
 }
 \arguments{
-\item{random}{A random effects formula, e.g. \code{~ x | group}.}
+\item{model_or_formula}{Either a fitted \code{nlme::lme} model or a formula specifying the fixed effects, e.g. \code{y ~ x}.}
 
-\item{data}{A data frame containing the variables in the model.}
+\item{random}{A random effects formula, e.g. \code{~ x | group}. Required only if a formula (not a model) is supplied.}
+
+\item{data}{A data frame containing the variables in the model. Required only if a formula (not a model) is supplied.}
 
 \item{legend}{Logical, whether to display a legend (default = TRUE).}
 
@@ -38,11 +46,13 @@ plot_lme_regressions(
 
 \item{inset}{Inset for the legend.}
 
-\item{return_model}{Logical, if TRUE returns the fitted model.}
+\item{return_model}{Logical, if TRUE returns the fitted model (default = FALSE).}
 
-\item{lty}{Line type for regression lines.}
+\item{lty}{Line type for group-specific regression lines.}
 
 \item{pch}{Plotting character for data points.}
+
+\item{lwd}{Line width for group-specific regression lines (default = 2).}
 
 \item{axes}{Logical, whether to draw axes (default = TRUE).}
 
@@ -54,35 +64,46 @@ plot_lme_regressions(
 
 \item{xlab, ylab}{Axis labels.}
 
-\item{col}{Colors for groups.}
+\item{col}{Colors for groups. Defaults to distinct colors for each group.}
 
 \item{oma}{Outer margin areas.}
 
 \item{mar}{Margins of the plot.}
 
-\item{...}{Additional arguments passed to \code{nlme::lme()} or \code{plot()}.}
+\item{draw_fixed_effects}{Logical, whether to plot the fixed-effect regression line (default = FALSE).}
 
-\item{formula}{A formula specifying the fixed effects, e.g. \code{y ~ x}.}
+\item{fixed_col}{Color of the fixed-effect regression line (default = "black").}
+
+\item{fixed_lty}{Line type of the fixed-effect regression line (default = 2).}
+
+\item{fixed_lwd}{Line width of the fixed-effect regression line (default = 3).}
+
+\item{...}{Additional arguments passed to \code{nlme::lme()} or \code{plot()}.}
 }
 \value{
 Invisibly returns \code{NULL} unless \code{return_model = TRUE}, in which case
 it returns the fitted \code{nlme::lme} model object.
 }
 \description{
-This function fits a linear mixed-effects model using \pkg{nlme} and
-plots the regression lines for each group, including fixed and random
-effects, R² values, and AIC.
+Fits a linear mixed-effects model using \pkg{nlme} and plots the observed data
+and regression lines for each group, including fixed and random effects.
+Optionally plots the overall fixed effect regression line and displays model
+statistics (R² values and AIC).
 }
 \details{
 The function automatically computes and plots regression lines for each
-grouping level based on both fixed and random effects. It also displays
-marginal (R²m) and conditional (R²c) R-squared values and the AIC of the model.
+grouping level based on both fixed and random effects. If \code{draw_fixed_effects = TRUE},
+the overall fixed-effect regression line is drawn across the full x-range.
+The plot legend includes regression equations for each group and, optionally,
+the fixed effect line. Model performance metrics, including marginal R² (R²m),
+conditional R² (R²c), and AIC, are displayed in the legend panel.
 }
 \examples{
 \dontrun{
 library(nlme)
 data(Orthodont)
-plot_lme_regressions(distance ~ age, random = ~ age | Subject, data = Orthodont)
+plot_lme_regressions(distance ~ age, random = ~ age | Subject, data = Orthodont,
+                     draw_fixed_effects = TRUE, fixed_col = "red")
 }
 
 }
